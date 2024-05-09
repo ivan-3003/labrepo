@@ -37,6 +37,12 @@
 import FactBase from "./FactBase.vue";
 import ProductionBase from "./ProductionBase.vue";
 
+/**
+ * Компонент `InferenceEngine` відповідає за виконання логічного виводу на основі заданих фактів та продукцій.
+ * Він використовує компоненти `FactBase` та `ProductionBase` для отримання даних та управління логікою виводу.
+ *
+ * @component
+ */
 export default {
   data() {
     return {
@@ -48,6 +54,9 @@ export default {
     ProductionBase,
   },
   methods: {
+    /**
+     * Виконує процес логічного виводу, оцінюючи умови продукцій та виконуючи відповідні дії.
+     */
     runInference() {
       for (const production of this.$refs.productionBase.productions) {
         if (this.evaluateCondition(production.condition)) {
@@ -56,16 +65,22 @@ export default {
         }
       }
     },
+    /**
+     * Очищує всі результати діагностики.
+     */
     clearResults() {
       this.results = [];
     },
-
+    /**
+     * Оцінює умову на основі наявних фактів.
+     * @param {string} condition - Логічна умова для перевірки.
+     * @returns {boolean}
+     */
     evaluateCondition(condition) {
       return condition.split("&&").every((cond) => {
         cond = cond.trim();
         const isNegation = cond.startsWith("!");
         if (isNegation) cond = cond.substring(1);
-        // Знайти факт у масиві, який відповідає назві факту `cond`
         const factObject = this.$refs.factBase.facts.find(
           (f) => f.fact === cond
         );
@@ -73,28 +88,34 @@ export default {
           console.error(`Факт ${cond} не знайдено`);
           return false;
         }
-        const factValue = factObject.status;
-        return isNegation ? !factValue : factValue;
+        return isNegation ? !factObject.status : factObject.status;
       });
     },
+    /**
+     * Записує дії, виконані на основі продукцій.
+     * @param {string} action - Дія для виконання.
+     */
     executeAction(action) {
-      // Записуємо результати дії
       this.results.push(action);
-    },
-    // Приклад методу дії для діагностики
-    diagnoseComponent(component) {
-      // Логіка для визначення потенційної проблеми компонента та виведення рекомендацій
-      const problems = {
-        engine: "Перевірте рівень масла та охолоджувальної рідини.",
-        battery: "Перевірте напругу акумулятора та стан з'єднань.",
-        tire: "Перевірте тиск у шинах та наявність пошкоджень.",
-      };
-      if (problems[component]) {
-        alert(`Проблема: ${component}\nДії: ${problems[component]}`);
-      } else {
-        alert(`Компонент '${component}' не визначено у базі даних проблем.`);
-      }
     },
   },
 };
 </script>
+
+<docs lang="md">
+Компонент `InferenceEngine` використовується для управління процесом логічного виводу в системі діагностики. Цей процес включає оцінку умов і виконання дій на основі заданих фактів та продукцій.
+
+## Опис
+
+Компонент забезпечує інтерфейс для взаємодії з базами фактів (`FactBase`) та продукцій (`ProductionBase`), дозволяючи користувачам запускати та очищати діагностику системи.
+
+## Приклади використання
+
+### Запуск логічного виводу
+
+Використовуючи компонент для запуску процесу діагностики:
+
+```html
+<inference-engine></inference-engine>
+```
+</docs>
